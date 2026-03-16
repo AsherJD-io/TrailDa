@@ -38,8 +38,16 @@ body {
   padding: 5rem 0;
 }
 
+.hero-logo {
+  display: block;
+  width: 70px;
+  max-width: 100%;
+  margin: 0 0 1.2rem;
+}
+
 .badge {
   display: inline-block;
+  max-width: 100%;
   padding: 0.55rem 1rem;
   border: 1px solid #bbf7d0;
   background: #ffffff;

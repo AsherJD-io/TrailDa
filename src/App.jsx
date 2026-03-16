@@ -3,11 +3,19 @@ export default function App() {
     <main className="page">
       <section className="hero">
         <div className="container">
+          <img
+            src="/trailda-logo.png"
+            alt="TrailDa logo"
+            className="hero-logo"
+          />
+
           <div className="badge">
             AI-powered operational intelligence for agricultural production
             networks
           </div>
+
           <h1>TrailDa</h1>
+
           <p className="hero-text">
             TrailDa helps agricultural production networks turn operational farm
             data into actionable insights for planning, monitoring, and yield
@@ -60,6 +68,7 @@ export default function App() {
       <section className="section alt">
         <div className="container">
           <h2>How TrailDa works</h2>
+
           <div className="grid five">
             <div className="card small">Farm operational data</div>
             <div className="card small">Data ingestion layer</div>
@@ -79,6 +88,7 @@ export default function App() {
               data.
             </p>
           </div>
+
           <div className="card">
             <h3>Performance monitoring</h3>
             <p>
@@ -86,6 +96,7 @@ export default function App() {
               one place.
             </p>
           </div>
+
           <div className="card">
             <h3>Yield forecasting</h3>
             <p>
@@ -100,6 +111,7 @@ export default function App() {
         <div className="container grid two">
           <div>
             <h2>Pilot and expansion</h2>
+
             <p>
               TrailDa plans to pilot through the Abrot agricultural business
               network in Ogun State and expand to other agricultural production
@@ -110,6 +122,7 @@ export default function App() {
 
           <div>
             <h2>Founder story</h2>
+
             <p>
               TrailDa emerged from the founder’s exposure to farming while
               growing up, later experience within poultry production networks in
@@ -124,11 +137,13 @@ export default function App() {
       <section className="section">
         <div className="container card contact">
           <h2>Contact</h2>
+
           <p>
             TrailDa is currently in early development and open to pilot
             conversations with agricultural production networks, agribusiness
             operators, and ecosystem partners.
           </p>
+
           <p className="email">trailda.dss@gmail.com</p>
         </div>
       </section>
