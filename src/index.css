@@ -28,14 +28,14 @@ body {
 }
 
 .container {
-  width: min(1120px, calc(100% - 2rem));
+  width: min(980px, calc(100% - 2rem));
   margin: 0 auto;
 }
 
 .hero {
   background: linear-gradient(to bottom, #ecfdf5, #ffffff);
   border-bottom: 1px solid #dcfce7;
-  padding: 5rem 0;
+  padding: 6rem 0 5rem 0;
 }
 
 .hero-logo {
@@ -60,8 +60,9 @@ body {
 
 h1 {
   font-size: clamp(2.5rem, 6vw, 4.75rem);
-  line-height: 1;
-  margin: 0 0 1rem;
+  line-height: 1.05;
+  margin: 0.3rem 0 1.2rem;
+  letter-spacing: -0.02em;
 }
 
 h2 {

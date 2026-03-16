@@ -41,6 +41,7 @@ export default function App() {
               around planting cycles, feed usage, production planning, and cost
               management are frequently made without structured data insights.
             </p>
+
             <p>
               This leads to inefficiencies, unpredictable yields, and costly
               operational mistakes across agribusiness networks, poultry
@@ -50,12 +51,14 @@ export default function App() {
 
           <div className="card">
             <h2>The solution</h2>
+
             <p>
               TrailDa is building an AI-powered decision infrastructure platform
               that aggregates operational farm data and converts it into
               actionable insights for production planning, performance
               monitoring, and yield forecasting.
             </p>
+
             <p>
               The system is designed to work with the operational data already
               generated within agricultural networks rather than requiring
