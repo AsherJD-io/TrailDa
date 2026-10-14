@@ -10,22 +10,21 @@ export default function App() {
           />
 
           <div className="badge">
-            AI-powered operational intelligence for agricultural production
-            networks
+            AI-powered operational intelligence for businesses
           </div>
 
           <h1>TrailDa</h1>
 
           <p className="hero-text">
-            TrailDa helps agricultural production networks turn operational farm
-            data into actionable insights for planning, monitoring, and yield
-            forecasting.
+            TrailDa trails a business&apos;s operational data and context, turns it
+            into intelligence, and helps the business understand what to improve and
+            what to do next.
           </p>
 
           <div className="tags">
-            <span>Agritech</span>
+            <span>Operational intelligence</span>
             <span>AI/ML</span>
-            <span>Big Data</span>
+            <span>Data infrastructure</span>
             <span>B2B</span>
           </div>
         </div>
@@ -36,16 +35,14 @@ export default function App() {
           <div>
             <h2>The problem</h2>
             <p>
-              Agricultural production networks across Nigeria often operate with
-              limited visibility into their own operational data. Key decisions
-              around planting cycles, feed usage, production planning, and cost
-              management are frequently made without structured data insights.
+              Businesses run on many moving parts at once: contracts, sites,
+              inventory, vendors, staff, energy and money. Important activity is
+              easily missed simply because too much is happening at the same time.
             </p>
 
             <p>
-              This leads to inefficiencies, unpredictable yields, and costly
-              operational mistakes across agribusiness networks, poultry
-              clusters, and other production groups.
+              Without structured visibility, decisions are made late, costs drift,
+              and recurring operational mistakes go unexplained.
             </p>
           </div>
 
@@ -53,16 +50,15 @@ export default function App() {
             <h2>The solution</h2>
 
             <p>
-              TrailDa is building an AI-powered decision infrastructure platform
-              that aggregates operational farm data and converts it into
-              actionable insights for production planning, performance
-              monitoring, and yield forecasting.
+              TrailDa is an AI-powered operational intelligence platform that
+              collects the data a business already generates, organises it, and
+              turns it into clear guidance on what is happening and what to do
+              next.
             </p>
 
             <p>
-              The system is designed to work with the operational data already
-              generated within agricultural networks rather than requiring
-              complex new infrastructure.
+              The platform works with existing operational data rather than
+              requiring complex new infrastructure.
             </p>
           </div>
         </div>
@@ -73,11 +69,11 @@ export default function App() {
           <h2>How TrailDa works</h2>
 
           <div className="grid five">
-            <div className="card small">Farm operational data</div>
-            <div className="card small">Data ingestion layer</div>
-            <div className="card small">Processing and quality checks</div>
-            <div className="card small">Analytics and forecasting</div>
-            <div className="card small">AI insight generation</div>
+            <div className="card small">Operational data</div>
+            <div className="card small">Ingestion</div>
+            <div className="card small">Normalization and quality</div>
+            <div className="card small">Analytics</div>
+            <div className="card small">Intelligence and next steps</div>
           </div>
         </div>
       </section>
@@ -85,26 +81,26 @@ export default function App() {
       <section className="section">
         <div className="container grid three">
           <div className="card">
-            <h3>Production planning</h3>
+            <h3>Real-time monitoring</h3>
             <p>
-              Support better planning decisions using structured operational
-              data.
+              See what is happening across the different areas of the business as
+              it happens, from one place.
             </p>
           </div>
 
           <div className="card">
-            <h3>Performance monitoring</h3>
+            <h3>Operational intelligence</h3>
             <p>
-              Track performance across multiple farms or production units from
-              one place.
+              Turn day-to-day records on money, stock, projects, energy, customers
+              and vendors into clear explanations of what changed and why.
             </p>
           </div>
 
           <div className="card">
-            <h3>Yield forecasting</h3>
+            <h3>Decision support</h3>
             <p>
-              Generate forward-looking insights to reduce guesswork and improve
-              decision-making.
+              Get practical guidance on what to improve and what to do next,
+              grounded in the business&apos;s own data.
             </p>
           </div>
         </div>
@@ -113,13 +109,11 @@ export default function App() {
       <section className="section green">
         <div className="container grid two">
           <div>
-            <h2>Pilot and expansion</h2>
+            <h2>Where TrailDa is</h2>
 
             <p>
-              TrailDa plans to pilot through the Abrot agricultural business
-              network in Ogun State and expand to other agricultural production
-              clusters in Ogun and Oyo states, including poultry production
-              networks where the founder has prior working experience.
+              TrailDa is in early development. The immediate focus is validating
+              the platform against real operational data before wider rollout.
             </p>
           </div>
 
@@ -127,11 +121,12 @@ export default function App() {
             <h2>Founder story</h2>
 
             <p>
-              TrailDa emerged from the founder’s exposure to farming while
-              growing up, later experience within poultry production networks in
-              Ibadan, and technical work building data decision systems. These
-              experiences shaped a focus on reliable data infrastructure and
-              operational intelligence for real-world sectors.
+              TrailDa grew out of the founder&apos;s engineering background in
+              agricultural and environmental systems, later work across
+              energy-system operations, facility management and finance, and
+              data engineering practice. Those experiences shaped a focus on
+              reliable data infrastructure and operational intelligence for
+              real-world sectors.
             </p>
           </div>
         </div>
@@ -142,9 +137,9 @@ export default function App() {
           <h2>Contact</h2>
 
           <p>
-            TrailDa is currently in early development and open to pilot
-            conversations with agricultural production networks, agribusiness
-            operators, and ecosystem partners.
+            TrailDa is currently in early development and open to conversations
+            with businesses and ecosystem partners interested in operational
+            intelligence.
           </p>
 
           <p className="email">trailda.dss@gmail.com</p>
