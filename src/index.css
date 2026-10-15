@@ -266,7 +266,9 @@ p {
   display: flex;
   align-items: center;
   gap: 0.25rem;
-  margin-left: auto;
+  /* No margin-left: auto here. The right-side actions group already owns the
+     single auto margin, and two of them would split the free space between
+     them, pushing the pill to the centre instead of beside the CTA. */
   padding: 0.3rem;
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid var(--line-on-dark);
@@ -303,14 +305,16 @@ p {
   flex-shrink: 0;
 }
 
-/* Right-side actions group. margin-left: auto is what anchors the CTA and the
-   menu control to the far right together, so the hamburger can never drift
-   into the middle of the header. */
+/* Right-side actions group: the booking CTA and the mobile menu control.
+   The auto margin is scoped to the mobile breakpoint below, where this group
+   is the only right-hand child and must carry the whole header. On desktop the
+   brand and nav sit left and the free space belongs to this group alone, so a
+   desktop auto margin here would compete with nothing and cannot be
+   double-counted; declaring it only where it is needed keeps one rule. */
 .header-actions {
   display: flex;
   align-items: center;
   gap: 0.6rem;
-  margin-left: auto;
 }
 
 /* ---------- Mobile menu control ---------- */
@@ -888,6 +892,15 @@ p {
   margin-top: 0;
 }
 
+/* Desktop header spacing, in one place. The brand stays left; the single auto
+   margin on the nav group hands all remaining space to it, which seats the pill
+   immediately beside the CTA and pins the CTA to the far right. One auto margin
+   in the header, so nothing can drift to the centre. */
+.site-nav {
+  margin-left: auto;
+  margin-right: 0.9rem;
+}
+
 /* ---------- Pipeline ---------- */
 .pipeline {
   list-style: none;
@@ -923,6 +936,19 @@ p {
 @keyframes pipelineSignal {
   to {
     transform: translateX(calc(100% + 1000px));
+  }
+}
+/* Mobile counterpart: the same signal travels downwards through the stacked
+   rows. The five rows are each 1/5 of the block height, so moving the band by
+   140% of its own height carries it from above the stage 01 row, through every
+   row in order, to below the stage 05 row. That keeps the signal tied to the
+   five stage states rather than looping decoratively. */
+@keyframes pipelineSignalVertical {
+  0% {
+    transform: translateY(-40%);
+  }
+  100% {
+    transform: translateY(140%);
   }
 }
 .pipeline-step {
@@ -1109,8 +1135,11 @@ p {
   .hero-grid {
     grid-template-columns: 1fr;
   }
+  /* Below the two-column hero the illustration is the only content, so it
+     should use the available width instead of a small centred square. Capped
+     for legibility of the node labels, and centred while it has slack. */
   .hero-visual {
-    max-width: 320px;
+    max-width: 420px;
     margin: 0 auto;
   }
   .lede {
@@ -1206,6 +1235,12 @@ p {
     gap: 0.6rem;
     height: 60px;
   }
+  /* Single auto margin for the whole header, mobile only: this group is the
+     right-hand child once the pill nav and the header CTA are hidden. */
+  .header-actions {
+    gap: 0.35rem;
+    margin-left: auto;
+  }
   /* Keep the wordmark on the left and let the logo shrink with it so the row
      cannot overflow at 320px. */
   .brand {
@@ -1231,11 +1266,52 @@ p {
   .pipeline {
     grid-template-columns: 1fr;
   }
+  /* The stages stack vertically here, so the travelling signal has to change
+     direction with them. It runs down the left edge as a vertical band and
+     animates from the stage 01 row towards the stage 05 row, so it always
+     reflects the real progression of the pipeline rather than crossing the
+     cards horizontally.
+
+     left: 0 with a width of 3px keeps the track outside the text area: every
+     step reserves room for its index column, so the signal never sits under
+     the labels. overflow: hidden on .pipeline clips the band to the block, and
+     the stage cards remain opaque and above it. */
+  .pipeline::after {
+    top: 0;
+    bottom: auto;
+    left: 0;
+    width: 3px;
+    height: 40%;
+    background: linear-gradient(
+      180deg,
+      transparent,
+      rgba(20, 184, 172, 0.55),
+      transparent
+    );
+    transform: translateY(-40%);
+    animation: pipelineSignalVertical 5s linear infinite;
+  }
+  /* Extra room on the left so the signal track clears the index number. */
+  .pipeline-step {
+    padding-left: 1.6rem;
+  }
   .example-grid {
     grid-template-columns: 1fr;
   }
+  /* The four stages read as a sequence rather than a stacked list: two columns
+     keep the square diagram above from being surrounded by empty space, and
+     each lane keeps its number so the order stays legible at a glance. */
   .diagram-legend {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.4rem 1rem;
+    margin-top: 1rem;
+  }
+  .lane {
+    font-size: 0.82rem;
+    padding: 0.25rem 0.2rem;
+  }
+  .diagram-caption {
+    margin-top: 0.9rem;
   }
   .hero-actions .btn {
     width: 100%;
@@ -1250,6 +1326,15 @@ p {
 
 /* Narrow phones: keep the overlay generous but guarantee it fits. */
 @media (max-width: 380px) {
+  /* At 320px the two legend columns only have ~136px each, so a 1rem gutter
+     reads as a gap down the middle. Tightening it lets the four stages read as
+     one sequence and keeps each label on a single line. */
+  .diagram-legend {
+    gap: 0.4rem 0.5rem;
+  }
+  .lane {
+    gap: 0.4rem;
+  }
   .mobile-menu-inner {
     padding-left: 1rem;
     padding-right: 1rem;
