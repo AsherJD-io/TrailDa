@@ -73,6 +73,59 @@ export default function App() {
     }
   }, [])
 
+  // Staggered reveal for the process and signal sections as they scroll into
+  // view. Purely additive: content is present and readable without it, and the
+  // whole effect is skipped under prefers-reduced-motion (see index.css).
+  useEffect(() => {
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)')
+    if (reduce.matches) return
+    const targets = document.querySelectorAll('[data-reveal]')
+    if (!targets.length || typeof IntersectionObserver === 'undefined') return
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-revealed')
+            io.unobserve(entry.target)
+          }
+        })
+      },
+      { threshold: 0.15, rootMargin: '0px 0px -8% 0px' }
+    )
+    targets.forEach((t) => io.observe(t))
+    return () => io.disconnect()
+  }, [])
+
+  // Scroll-spy: mark the nav link whose section is currently in view so the
+  // pill shows a selected tab. Skipped under reduced-motion; the links still
+  // work as plain anchors.
+  useEffect(() => {
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const setCurrent = (hash) => {
+      document.querySelectorAll('.site-nav a').forEach((a) => {
+        a.classList.toggle('is-current', a.getAttribute('href') === hash)
+      })
+    }
+    if (reduce.matches || typeof IntersectionObserver === 'undefined') return
+    const sections = ['#how-it-works', '#h-facto', '#story']
+      .map((sel) => document.querySelector(sel))
+      .filter(Boolean)
+    if (!sections.length) return
+
+    const spy = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0]
+        if (visible) setCurrent('#' + visible.target.id)
+      },
+      { rootMargin: '-45% 0px -45% 0px', threshold: 0 }
+    )
+    sections.forEach((s) => spy.observe(s))
+    return () => spy.disconnect()
+  }, [])
+
   return (
     <div className="page">
       <a className="skip-link" href="#main">
@@ -106,7 +159,7 @@ export default function App() {
         <section className="hero" id="top">
           <div className="container hero-grid">
             <div className="hero-copy">
-              <p className="eyebrow">TrailDa</p>
+              <p className="eyebrow">H-Facto by TrailDa</p>
               <h1>See what is happening across your business, before it becomes a problem.</h1>
               <p className="lede">
                 H-Facto is TrailDa&apos;s real-time operational monitoring and intelligence
@@ -115,10 +168,7 @@ export default function App() {
                 what to do next.
               </p>
               <div className="hero-actions">
-                <a className="btn btn-primary" href={BOOKING_URL} target="_blank" rel="noopener noreferrer">
-                  Book a session
-                </a>
-                <a className="btn btn-ghost" href="#how-it-works">
+                <a className="btn btn-primary" href="#how-it-works">
                   See how it works
                 </a>
               </div>
@@ -223,7 +273,12 @@ export default function App() {
             </p>
             <ol className="pipeline">
               {PIPELINE.map((stage, i) => (
-                <li className="pipeline-step" key={stage}>
+                <li
+                  className="pipeline-step"
+                  key={stage}
+                  data-reveal
+                  style={{ transitionDelay: `${i * 90}ms` }}
+                >
                   <span className="pipeline-index">{String(i + 1).padStart(2, '0')}</span>
                   <span className="pipeline-label">{stage}</span>
                 </li>
@@ -268,8 +323,13 @@ export default function App() {
             <div className="examples">
               <h3 className="examples-title">What that looks like in practice</h3>
               <div className="example-grid">
-                {EXAMPLES.map((ex) => (
-                  <article className="example" key={ex.title}>
+                {EXAMPLES.map((ex, i) => (
+                  <article
+                    className="example"
+                    key={ex.title}
+                    data-reveal
+                    style={{ transitionDelay: `${i * 90}ms` }}
+                  >
                     <span className="example-tag">{ex.tag}</span>
                     <h4>{ex.title}</h4>
                     <p>{ex.body}</p>
