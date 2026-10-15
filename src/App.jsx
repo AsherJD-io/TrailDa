@@ -1,6 +1,14 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 const BOOKING_URL = 'https://calendar.app.google/1SVu6faw9GNBHzxb7'
+
+// Desktop pill navigation and mobile menu share one source of truth, so the
+// links can never drift apart and no route is invented anywhere.
+const NAV_LINKS = [
+  { href: '#how-it-works', label: 'How it works' },
+  { href: '#h-facto', label: 'H-Facto' },
+  { href: '#story', label: 'Story' },
+]
 
 // The five-stage pipeline, carried forward from the original "How TrailDa works" row.
 const PIPELINE = [
@@ -39,6 +47,31 @@ const EXAMPLES = [
 
 export default function App() {
   const diagramRef = useRef(null)
+  const [menuOpen, setMenuOpen] = useState(false)
+  const menuId = 'mobile-menu'
+
+  // A mobile menu that stays open while the viewport grows, or that leaks focus
+  // behind it, is a trap. Close it on Escape, on resize past the breakpoint,
+  // and whenever a link is chosen.
+  useEffect(() => {
+    if (!menuOpen) return
+    const onKey = (e) => {
+      if (e.key === 'Escape') {
+        setMenuOpen(false)
+        document.getElementById('menu-toggle')?.focus()
+      }
+    }
+    const mq = window.matchMedia('(min-width: 621px)')
+    const onWide = () => {
+      if (mq.matches) setMenuOpen(false)
+    }
+    document.addEventListener('keydown', onKey)
+    mq.addEventListener('change', onWide)
+    return () => {
+      document.removeEventListener('keydown', onKey)
+      mq.removeEventListener('change', onWide)
+    }
+  }, [menuOpen])
 
   // Gentle, purposeful motion for the connected-operations diagram. It advances
   // the "surfaced" highlight through the legend lanes so the visual tells the
@@ -139,10 +172,31 @@ export default function App() {
             <span className="brand-name">TrailDa</span>
           </a>
           <nav className="site-nav" aria-label="Primary">
-            <a href="#how-it-works">How it works</a>
-            <a href="#h-facto">H-Facto</a>
-            <a href="#story">Story</a>
+            {NAV_LINKS.map((link) => (
+              <a key={link.href} href={link.href}>
+                {link.label}
+              </a>
+            ))}
           </nav>
+
+          {/* Mobile: the same three destinations behind a hamburger. Hidden on
+              desktop, where the pill navigation above remains the primary nav. */}
+          <button
+            id="menu-toggle"
+            type="button"
+            className="menu-toggle"
+            aria-expanded={menuOpen}
+            aria-controls={menuId}
+            aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+            onClick={() => setMenuOpen((open) => !open)}
+          >
+            <span className="menu-bars" aria-hidden="true">
+              <span />
+              <span />
+              <span />
+            </span>
+          </button>
+
           <a
             className="btn btn-primary btn-sm header-cta"
             href={BOOKING_URL}
@@ -151,6 +205,25 @@ export default function App() {
           >
             Book a session
           </a>
+        </div>
+
+        <div
+          id={menuId}
+          className={`mobile-menu${menuOpen ? ' is-open' : ''}`}
+          hidden={!menuOpen}
+        >
+          <nav aria-label="Mobile">
+            {NAV_LINKS.map((link) => (
+              <a
+                key={link.href}
+                href={link.href}
+                className="mobile-menu-link"
+                onClick={() => setMenuOpen(false)}
+              >
+                {link.label}
+              </a>
+            ))}
+          </nav>
         </div>
       </header>
 

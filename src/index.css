@@ -301,6 +301,71 @@ p {
   flex-shrink: 0;
 }
 
+/* ---------- Mobile menu control ---------- */
+/* Hidden on desktop; the pill navigation is the primary nav there. The button
+   keeps a visible focus ring and a 44px touch target. */
+.menu-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  margin-left: auto;
+  padding: 0;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--line-on-dark);
+  border-radius: 12px;
+  color: var(--text-on-dark);
+  cursor: pointer;
+}
+.menu-toggle:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+.menu-bars {
+  display: grid;
+  gap: 4px;
+  width: 18px;
+}
+.menu-bars span {
+  display: block;
+  height: 2px;
+  border-radius: 2px;
+  background: currentColor;
+}
+
+/* ---------- Mobile menu ---------- */
+.mobile-menu {
+  display: none;
+  border-top: 1px solid var(--line-on-dark);
+  background: rgba(10, 16, 32, 0.98);
+  backdrop-filter: saturate(140%) blur(10px);
+  padding: 0.5rem 0 0.9rem;
+}
+.mobile-menu nav {
+  display: grid;
+  gap: 0.15rem;
+}
+.mobile-menu-link {
+  display: block;
+  padding: 0.85rem 0.25rem;
+  color: var(--text-on-dark);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 1rem;
+  border-bottom: 1px solid var(--line-on-dark);
+  border-radius: 8px;
+}
+.mobile-menu-link:last-child {
+  border-bottom: 0;
+}
+.mobile-menu-link:hover,
+.mobile-menu-link:focus-visible {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--accent);
+}
+
 /* ---------- Hero ---------- */
 .hero {
   background:
@@ -802,13 +867,40 @@ p {
   .example-grid {
     grid-template-columns: repeat(2, 1fr);
   }
+  /* Phone typography: heading settles in the 32-38px band, paragraph at
+     16-18px. The clamps scale smoothly from 320px up rather than stepping. */
+  .hero-copy h1 {
+    font-size: clamp(2rem, 9.5vw, 2.4rem);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+  }
+  .lede {
+    font-size: clamp(1rem, 4.2vw, 1.125rem);
+    line-height: 1.6;
+  }
+  .eyebrow {
+    font-size: 0.75rem;
+    letter-spacing: 0.14em;
+  }
+  h2 {
+    font-size: clamp(1.4rem, 5.5vw, 1.75rem);
+    line-height: 1.2;
+  }
+  .section-intro {
+    font-size: 1rem;
+    margin-bottom: 2rem;
+  }
+  .prose p {
+    font-size: 1rem;
+    line-height: 1.65;
+  }
+  .hero-note {
+    font-size: 0.88rem;
+    line-height: 1.55;
+  }
 }
 
 @media (max-width: 760px) {
-  .site-nav {
-    gap: 0;
-    padding: 0.25rem;
-  }
   .site-nav a {
     padding: 0.4rem 0.7rem;
     font-size: 0.85rem;
@@ -821,14 +913,42 @@ p {
 }
 
 @media (max-width: 620px) {
+  /* The pill navigation gives way to the hamburger at this breakpoint. */
   .site-nav {
     display: none;
   }
+  .menu-toggle {
+    display: inline-flex;
+  }
+  .mobile-menu.is-open {
+    display: block;
+  }
   .header-inner {
     justify-content: space-between;
+    gap: 0.75rem;
+  }
+  /* Keep the wordmark on the left and let the logo shrink with it so the row
+     cannot overflow at 320px. */
+  .brand {
+    flex: 0 1 auto;
+    min-width: 0;
+    gap: 0.4rem;
+  }
+  .brand-logo {
+    height: 26px;
+  }
+  .brand-name {
+    font-size: 0.95rem;
   }
   .header-cta {
     margin-left: 0;
+    padding: 0.55rem 0.8rem;
+    font-size: 0.82rem;
+  }
+  /* A usable touch target is not optional: the control never shrinks, and
+     nothing in the row wraps or overlaps. */
+  .menu-toggle {
+    flex-shrink: 0;
   }
   .pipeline {
     grid-template-columns: 1fr;
@@ -841,6 +961,12 @@ p {
   }
   .hero-actions .btn {
     width: 100%;
+  }
+  .container {
+    width: calc(100% - 2rem);
+  }
+  .narrow {
+    width: calc(100% - 2rem);
   }
 }
 
