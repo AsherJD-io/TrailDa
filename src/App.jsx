@@ -49,16 +49,41 @@ export default function App() {
   const diagramRef = useRef(null)
   const [menuOpen, setMenuOpen] = useState(false)
   const menuId = 'mobile-menu'
+  const toggleRef = useRef(null)
+  const panelRef = useRef(null)
+  const closeRef = useRef(null)
+  const wasOpenRef = useRef(false)
 
-  // A mobile menu that stays open while the viewport grows, or that leaks focus
-  // behind it, is a trap. Close it on Escape, on resize past the breakpoint,
-  // and whenever a link is chosen.
+  // A full-screen overlay has to behave like a dialog, not a dropdown. Escape
+  // closes it and returns focus to the control that opened it, the page cannot
+  // scroll behind it, and a resize past the breakpoint cannot leave the overlay
+  // stranded over the desktop layout.
   useEffect(() => {
     if (!menuOpen) return
     const onKey = (e) => {
       if (e.key === 'Escape') {
         setMenuOpen(false)
-        document.getElementById('menu-toggle')?.focus()
+        toggleRef.current?.focus()
+      }
+    }
+    // Simple focus wrap so Tab cannot escape the overlay to the page behind.
+    const onTab = (e) => {
+      if (e.key !== 'Tab') return
+      const panel = panelRef.current
+      if (!panel) return
+      const items = Array.from(
+        panel.querySelectorAll('a[href], button:not([disabled])')
+      ).filter((el) => el.offsetParent !== null)
+      if (!items.length) return
+      const first = items[0]
+      const last = items[items.length - 1]
+      const active = document.activeElement
+      if (e.shiftKey && (active === first || !panel.contains(active))) {
+        e.preventDefault()
+        last.focus()
+      } else if (!e.shiftKey && (active === last || !panel.contains(active))) {
+        e.preventDefault()
+        first.focus()
       }
     }
     const mq = window.matchMedia('(min-width: 621px)')
@@ -66,10 +91,42 @@ export default function App() {
       if (mq.matches) setMenuOpen(false)
     }
     document.addEventListener('keydown', onKey)
+    document.addEventListener('keydown', onTab, true)
     mq.addEventListener('change', onWide)
+
+    // Lock the background scroll. The scrolling element here is <html>, so
+    // overflow has to be locked on both elements or the page still moves.
+    const html = document.documentElement
+    const prev = {
+      htmlOverflow: html.style.overflow,
+      bodyOverflow: document.body.style.overflow,
+    }
+    html.style.overflow = 'hidden'
+    document.body.style.overflow = 'hidden'
+
     return () => {
       document.removeEventListener('keydown', onKey)
+      document.removeEventListener('keydown', onTab, true)
       mq.removeEventListener('change', onWide)
+      html.style.overflow = prev.htmlOverflow
+      document.body.style.overflow = prev.bodyOverflow
+    }
+  }, [menuOpen])
+
+  // Move focus into the overlay on open so keyboard and screen-reader users
+  // land inside it rather than behind it. On close, the now-removed panel
+  // would leave focus on <body>, so hand it back to the control that opened it.
+  useEffect(() => {
+    if (menuOpen) {
+      wasOpenRef.current = true
+      const frame = requestAnimationFrame(() => {
+        if (closeRef.current) closeRef.current.focus()
+      })
+      return () => cancelAnimationFrame(frame)
+    }
+    if (wasOpenRef.current) {
+      wasOpenRef.current = false
+      if (toggleRef.current) toggleRef.current.focus()
     }
   }, [menuOpen])
 
@@ -179,10 +236,9 @@ export default function App() {
             ))}
           </nav>
 
-          {/* Right-side actions: the booking CTA and the mobile menu control
-              belong together, pinned to the far right as one group by
-              margin-left: auto. Three loose flex children would let the
-              hamburger drift to the centre of the header. */}
+          {/* Right-side actions: on desktop the pill nav already pushes this
+              group to the far right. On mobile it holds only the menu control,
+              since the booking CTA lives inside the overlay. */}
           <div className="header-actions">
             <a
               className="btn btn-primary btn-sm header-cta"
@@ -193,10 +249,12 @@ export default function App() {
               Book a session
             </a>
 
-            {/* Mobile: the same three destinations behind a hamburger. Hidden on
-                desktop, where the pill navigation above remains the primary nav. */}
+            {/* Mobile menu control: a two-stroke mark that reads as open, and
+                rotates into an explicit close symbol while the overlay is up.
+                Hidden on desktop, where the pill navigation is primary. */}
             <button
               id="menu-toggle"
+              ref={toggleRef}
               type="button"
               className="menu-toggle"
               aria-expanded={menuOpen}
@@ -204,34 +262,128 @@ export default function App() {
               aria-label={menuOpen ? 'Close menu' : 'Open menu'}
               onClick={() => setMenuOpen((open) => !open)}
             >
-              <span className="menu-bars" aria-hidden="true">
-                <span />
-                <span />
-                <span />
+              <span className="menu-icon" aria-hidden="true">
+                <span className="menu-icon-line" />
+                <span className="menu-icon-line" />
               </span>
             </button>
           </div>
         </div>
-
-        <div
-          id={menuId}
-          className={`mobile-menu${menuOpen ? ' is-open' : ''}`}
-          hidden={!menuOpen}
-        >
-          <nav aria-label="Mobile">
-            {NAV_LINKS.map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
-                className="mobile-menu-link"
-                onClick={() => setMenuOpen(false)}
-              >
-                {link.label}
-              </a>
-            ))}
-          </nav>
-        </div>
       </header>
+
+      {/* Full-screen navigation overlay. Opaque, so the page beneath cannot
+          distract. Locked into the space below the browser chrome with a
+          dynamic viewport height and respect for the safe-area insets.
+
+          This is deliberately a sibling of the header, not a child of it: the
+          header is position: sticky, which would make it the containing block
+          for a fixed descendant and shrink inset: 0 to the header's own 60px. */}
+      <div
+        id={menuId}
+        ref={panelRef}
+        className={`mobile-menu${menuOpen ? ' is-open' : ''}`}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Site menu"
+        hidden={!menuOpen}
+      >
+        <div className="mobile-menu-inner">
+          <div className="mobile-menu-top">
+            <span className="mobile-menu-brand">
+              <img
+                src="/trailda-logo.png"
+                alt=""
+                className="brand-logo"
+                width="3601"
+                height="1891"
+              />
+              <span className="mobile-menu-brand-name">TrailDa</span>
+            </span>
+            <button
+              ref={closeRef}
+              type="button"
+              className="menu-close"
+              aria-label="Close menu"
+              aria-controls={menuId}
+              onClick={() => {
+                setMenuOpen(false)
+                toggleRef.current?.focus()
+              }}
+            >
+              <span className="menu-icon" aria-hidden="true">
+                <span className="menu-icon-line" />
+                <span className="menu-icon-line" />
+              </span>
+            </button>
+          </div>
+
+          <nav className="mobile-menu-nav" aria-label="Mobile">
+            <p className="mobile-menu-eyebrow">Menu</p>
+            <ul className="mobile-menu-list">
+              {NAV_LINKS.map((link, i) => (
+                <li
+                  key={link.href}
+                  className="mobile-menu-item"
+                  style={{ '--i': i }}
+                >
+                  <a
+                    href={link.href}
+                    className="mobile-menu-link"
+                    onClick={(e) => {
+                      // Do the navigation ourselves. React re-renders the
+                      // overlay out of the DOM the moment menuOpen flips, and
+                      // the browser's own anchor handling would then move
+                      // focus to a target the re-render just removed, leaving
+                      // focus on <body>. Scrolling explicitly keeps the jump,
+                      // while focus is returned to the opener below.
+                      e.preventDefault()
+                      setMenuOpen(false)
+                      const target = document.querySelector(link.href)
+                      if (target) {
+                        const reduce =
+                          window.matchMedia('(prefers-reduced-motion: reduce)')
+                            .matches
+                        target.scrollIntoView({
+                          behavior: reduce ? 'auto' : 'smooth',
+                        })
+                      }
+                      if (history.replaceState) history.replaceState(null, '', link.href)
+                    }}
+                  >
+                    <span className="mobile-menu-index" aria-hidden="true">
+                      {String(i + 1).padStart(2, '0')}
+                    </span>
+                    <span className="mobile-menu-label">{link.label}</span>
+                    <span className="mobile-menu-arrow" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <path
+                          d="M5 12h13M12 5l7 7-7 7"
+                          stroke="currentColor"
+                          strokeWidth="1.75"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    </span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+
+          <div className="mobile-menu-foot">
+            <a
+              className="btn btn-primary mobile-menu-cta"
+              href={BOOKING_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Book a session
+            </a>
+            <p className="mobile-menu-note">Operational intelligence for businesses</p>
+          </div>
+        </div>
+      </div>
 
       <main id="main">
         {/* Hero */}
