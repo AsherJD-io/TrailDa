@@ -1,150 +1,342 @@
+import { useEffect, useRef } from 'react'
+
+const BOOKING_URL = 'https://calendar.app.google/1SVu6faw9GNBHzxb7'
+const CONTACT_EMAIL = 'trailda.dss@gmail.com'
+
+// The five-stage pipeline, carried forward from the original "How TrailDa works" row.
+const PIPELINE = [
+  'Operational data',
+  'Ingestion',
+  'Normalization and quality',
+  'Analytics',
+  'Intelligence and next steps',
+]
+
+// Illustrative example signals for H Factor. These are deliberately generic
+// examples of the kind of thing the capability is designed to surface. They are
+// not real monitored events, customer data or live integrations.
+const EXAMPLES = [
+  {
+    tag: 'Signal',
+    title: 'A quiet change that matters',
+    body: 'A small shift in one area, repeated over time, becomes a pattern worth noticing before it grows.',
+  },
+  {
+    tag: 'Context',
+    title: 'What actually changed',
+    body: 'Related activity is connected so a change is explained by the business around it, not shown in isolation.',
+  },
+  {
+    tag: 'Attention',
+    title: 'What deserves a look',
+    body: 'The surface highlights what is unusual and relevant, instead of asking someone to watch everything at once.',
+  },
+  {
+    tag: 'Next step',
+    title: 'What to do about it',
+    body: 'Each surfaced signal carries a practical suggestion, so monitoring turns into a decision rather than a report.',
+  },
+]
+
 export default function App() {
+  const diagramRef = useRef(null)
+
+  // Gentle, purposeful motion for the connected-operations diagram. It advances
+  // the "surfaced" highlight through the legend lanes so the visual tells the
+  // story: signals gather, a change emerges, a signal is surfaced, a next step
+  // appears. Every meaningful element also exists in the static markup, and the
+  // whole animation is skipped under prefers-reduced-motion (see index.css).
+  useEffect(() => {
+    const root = diagramRef.current
+    if (!root) return
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)')
+    if (reduce.matches) return
+
+    let frame = 0
+    let running = true
+    const lanes = Array.from(root.querySelectorAll('[data-lane]'))
+    if (!lanes.length) return
+    const diagram = root.querySelector('.diagram')
+
+    const step = () => {
+      if (!running) return
+      frame += 1
+      const active = Math.floor(frame / 45) % lanes.length
+      lanes.forEach((lane, idx) => lane.classList.toggle('is-active', idx === active))
+      // Surface the highlighted nodes once the story reaches "a signal is
+      // surfaced" / "a next step appears" (lanes 3 and 4).
+      if (diagram) diagram.classList.toggle('is-surfacing', active >= 2)
+      requestAnimationFrame(step)
+    }
+    requestAnimationFrame(step)
+    return () => {
+      running = false
+    }
+  }, [])
+
   return (
-    <main className="page">
-      <section className="hero">
-        <div className="container">
-          <img
-            src="/trailda-logo.png"
-            alt="TrailDa logo"
-            className="hero-logo"
-          />
+    <div className="page">
+      <a className="skip-link" href="#main">
+        Skip to content
+      </a>
 
-          <div className="badge">
-            AI-powered operational intelligence for businesses
-          </div>
-
-          <h1>TrailDa</h1>
-
-          <p className="hero-text">
-            TrailDa trails a business&apos;s operational data and context, turns it
-            into intelligence, and helps the business understand what to improve and
-            what to do next.
-          </p>
-
-          <div className="tags">
-            <span>Operational intelligence</span>
-            <span>AI/ML</span>
-            <span>Data infrastructure</span>
-            <span>B2B</span>
-          </div>
+      <header className="site-header">
+        <div className="container header-inner">
+          <a className="brand" href="#top" aria-label="TrailDa home">
+            <img src="/trailda-logo.png" alt="" className="brand-logo" width="34" height="34" />
+            <span className="brand-name">TrailDa</span>
+          </a>
+          <nav className="site-nav" aria-label="Primary">
+            <a href="#how-it-works">How it works</a>
+            <a href="#h-factor">H Factor</a>
+            <a href="#story">Story</a>
+          </nav>
+          <a
+            className="btn btn-primary btn-sm header-cta"
+            href={BOOKING_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Book a session
+          </a>
         </div>
-      </section>
+      </header>
 
-      <section className="section">
-        <div className="container grid two">
-          <div>
-            <h2>The problem</h2>
-            <p>
-              Businesses run on many moving parts at once: contracts, sites,
-              inventory, vendors, staff, energy and money. Important activity is
-              easily missed simply because too much is happening at the same time.
+      <main id="main">
+        {/* Hero */}
+        <section className="hero" id="top">
+          <div className="container hero-grid">
+            <div className="hero-copy">
+              <p className="eyebrow">H Factor by TrailDa</p>
+              <h1>See what is happening across your business, before it becomes a problem.</h1>
+              <p className="lede">
+                H Factor is TrailDa&apos;s real-time operational monitoring and intelligence
+                capability. It follows the data your business already produces, connects the
+                signals, and helps you understand what is changing, what deserves attention, and
+                what to do next.
+              </p>
+              <div className="hero-actions">
+                <a className="btn btn-primary" href={BOOKING_URL} target="_blank" rel="noopener noreferrer">
+                  Book a session
+                </a>
+                <a className="btn btn-ghost" href="#how-it-works">
+                  See how it works
+                </a>
+              </div>
+              <p className="hero-note">
+                TrailDa is in early development. H Factor is being validated against real
+                operational data before wider release.
+              </p>
+            </div>
+
+            {/* Original animated diagram: operational signals flowing into a connected
+                system, a change emerging, a signal surfaced, a next step visible. */}
+            <div className="hero-visual" ref={diagramRef}>
+              <div className="diagram">
+                <div className="diagram-stage" aria-hidden="true">
+                  <div className="signal-layer">
+                    <span className="signal s1" />
+                    <span className="signal s2" />
+                    <span className="signal s3" />
+                    <span className="signal s4" />
+                  </div>
+
+                  <svg className="diagram-svg" viewBox="0 0 320 320" role="presentation">
+                    <defs>
+                      <linearGradient id="pathGrad" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="0%" stopColor="var(--accent)" stopOpacity="0.05" />
+                        <stop offset="100%" stopColor="var(--accent)" stopOpacity="0.55" />
+                      </linearGradient>
+                    </defs>
+                    <path className="path p1" d="M40 60 L150 150" stroke="url(#pathGrad)" />
+                    <path className="path p2" d="M280 70 L170 150" stroke="url(#pathGrad)" />
+                    <path className="path p3" d="M50 260 L150 170" stroke="url(#pathGrad)" />
+                    <path className="path p4" d="M275 255 L170 170" stroke="url(#pathGrad)" />
+                    <circle className="core-ring" cx="160" cy="160" r="46" />
+                    <circle className="core" cx="160" cy="160" r="30" />
+                    <circle className="core-dot" cx="160" cy="160" r="6" />
+                    <circle className="node n1" cx="40" cy="60" r="7" />
+                    <circle className="node n2" cx="280" cy="70" r="7" />
+                    <circle className="node n3" cx="50" cy="260" r="7" />
+                    <circle className="node n4" cx="275" cy="255" r="7" />
+                    <circle className="node surf f1" cx="120" cy="110" r="5" />
+                    <circle className="node surf f2" cx="205" cy="118" r="5" />
+                    <circle className="node surf f3" cx="112" cy="212" r="5" />
+                    <circle className="node surf f4" cx="208" cy="208" r="5" />
+                  </svg>
+                </div>
+
+                <ol className="diagram-legend">
+                  <li data-lane="0" className="lane">
+                    <span className="lane-dot" />
+                    Signals gather
+                  </li>
+                  <li data-lane="1" className="lane">
+                    <span className="lane-dot" />
+                    A change emerges
+                  </li>
+                  <li data-lane="2" className="lane">
+                    <span className="lane-dot" />
+                    A signal is surfaced
+                  </li>
+                  <li data-lane="3" className="lane">
+                    <span className="lane-dot" />
+                    A next step appears
+                  </li>
+                </ol>
+                <p className="diagram-caption">
+                  An illustration of how H Factor connects operational signals. Not a live console
+                  and not customer data.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Problem */}
+        <section className="section" id="problem">
+          <div className="container narrow">
+            <p className="section-eyebrow">The problem</p>
+            <h2>Too much happens at once to see clearly.</h2>
+            <div className="prose">
+              <p>
+                Businesses run on many moving parts at once: contracts, sites, inventory, vendors,
+                staff, energy and money. Important activity is easily missed simply because too
+                much is happening at the same time.
+              </p>
+              <p>
+                Without structured visibility, decisions are made late, costs drift, and recurring
+                operational mistakes go unexplained. H Factor exists to close that gap: to watch
+                the whole picture, notice what matters, and say so in time to act.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* How it works */}
+        <section className="section alt" id="how-it-works">
+          <div className="container">
+            <p className="section-eyebrow">How it works</p>
+            <h2>From operational data to a clear next step.</h2>
+            <p className="section-intro">
+              H Factor follows the same path TrailDa uses across the platform: take the data a
+              business already generates, make it reliable, and turn it into intelligence.
             </p>
-
-            <p>
-              Without structured visibility, decisions are made late, costs drift,
-              and recurring operational mistakes go unexplained.
+            <ol className="pipeline">
+              {PIPELINE.map((stage, i) => (
+                <li className="pipeline-step" key={stage}>
+                  <span className="pipeline-index">{String(i + 1).padStart(2, '0')}</span>
+                  <span className="pipeline-label">{stage}</span>
+                </li>
+              ))}
+            </ol>
+            <p className="section-foot">
+              The platform works with existing operational data rather than requiring complex new
+              infrastructure.
             </p>
           </div>
+        </section>
 
-          <div className="card">
-            <h2>The solution</h2>
+        {/* H Factor deep dive */}
+        <section className="section" id="h-factor">
+          <div className="container">
+            <p className="section-eyebrow">H Factor</p>
+            <h2>Monitoring that turns into intelligence.</h2>
+            <div className="feature-grid">
+              <article className="feature">
+                <h3>Real-time monitoring</h3>
+                <p>
+                  See what is happening across the different areas of the business as it happens,
+                  from one place, instead of assembling the picture by hand.
+                </p>
+              </article>
+              <article className="feature">
+                <h3>Operational intelligence</h3>
+                <p>
+                  Day-to-day records on money, stock, projects, energy, customers and vendors are
+                  connected into clear explanations of what changed and why.
+                </p>
+              </article>
+              <article className="feature">
+                <h3>Decision support</h3>
+                <p>
+                  Practical guidance on what to improve and what to do next, grounded in the
+                  business&apos;s own data rather than generic advice.
+                </p>
+              </article>
+            </div>
 
-            <p>
-              TrailDa is an AI-powered operational intelligence platform that
-              collects the data a business already generates, organises it, and
-              turns it into clear guidance on what is happening and what to do
-              next.
-            </p>
-
-            <p>
-              The platform works with existing operational data rather than
-              requiring complex new infrastructure.
-            </p>
+            <div className="examples">
+              <h3 className="examples-title">What that looks like in practice</h3>
+              <div className="example-grid">
+                {EXAMPLES.map((ex) => (
+                  <article className="example" key={ex.title}>
+                    <span className="example-tag">{ex.tag}</span>
+                    <h4>{ex.title}</h4>
+                    <p>{ex.body}</p>
+                  </article>
+                ))}
+              </div>
+              <p className="examples-note">
+                These are illustrative examples of the kind of value H Factor is designed to
+                provide, drawn from the intended behaviour rather than from live customer activity.
+              </p>
+            </div>
           </div>
+        </section>
+
+        {/* Story */}
+        <section className="section alt" id="story">
+          <div className="container narrow">
+            <p className="section-eyebrow">Our story</p>
+            <h2>Built from operational experience.</h2>
+            <div className="prose">
+              <p>
+                TrailDa grew out of the founder&apos;s engineering background in agricultural and
+                environmental systems, later work across energy-system operations, facility
+                management and finance, and data engineering practice. Across each of those settings
+                the same pattern appeared: many moving parts, and important activity that is easy to
+                miss when too much is happening at once.
+              </p>
+              <p>
+                Those experiences shaped a focus on reliable data infrastructure and operational
+                intelligence for real-world sectors. H Factor is the first capability built directly
+                on that idea, and the wider TrailDa platform is being developed around it.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* Closing CTA */}
+        <section className="closing" id="contact">
+          <div className="container narrow closing-inner">
+            <h2>See what H Factor could surface in your business.</h2>
+            <p>
+              Book a short session to walk through your operations and where clearer visibility
+              would help. TrailDa is in early development and open to conversations with businesses
+              interested in operational intelligence.
+            </p>
+            <div className="hero-actions center">
+              <a className="btn btn-primary" href={BOOKING_URL} target="_blank" rel="noopener noreferrer">
+                Book a session
+              </a>
+              <a className="btn btn-ghost" href={`mailto:${CONTACT_EMAIL}`}>
+                {CONTACT_EMAIL}
+              </a>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer className="site-footer">
+        <div className="container footer-inner">
+          <span className="footer-brand">TrailDa</span>
+          <span className="footer-note">Operational intelligence for businesses</span>
+          <a className="footer-mail" href={`mailto:${CONTACT_EMAIL}`}>
+            {CONTACT_EMAIL}
+          </a>
         </div>
-      </section>
-
-      <section className="section alt">
-        <div className="container">
-          <h2>How TrailDa works</h2>
-
-          <div className="grid five">
-            <div className="card small">Operational data</div>
-            <div className="card small">Ingestion</div>
-            <div className="card small">Normalization and quality</div>
-            <div className="card small">Analytics</div>
-            <div className="card small">Intelligence and next steps</div>
-          </div>
-        </div>
-      </section>
-
-      <section className="section">
-        <div className="container grid three">
-          <div className="card">
-            <h3>Real-time monitoring</h3>
-            <p>
-              See what is happening across the different areas of the business as
-              it happens, from one place.
-            </p>
-          </div>
-
-          <div className="card">
-            <h3>Operational intelligence</h3>
-            <p>
-              Turn day-to-day records on money, stock, projects, energy, customers
-              and vendors into clear explanations of what changed and why.
-            </p>
-          </div>
-
-          <div className="card">
-            <h3>Decision support</h3>
-            <p>
-              Get practical guidance on what to improve and what to do next,
-              grounded in the business&apos;s own data.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <section className="section green">
-        <div className="container grid two">
-          <div>
-            <h2>Where TrailDa is</h2>
-
-            <p>
-              TrailDa is in early development. The immediate focus is validating
-              the platform against real operational data before wider rollout.
-            </p>
-          </div>
-
-          <div>
-            <h2>Founder story</h2>
-
-            <p>
-              TrailDa grew out of the founder&apos;s engineering background in
-              agricultural and environmental systems, later work across
-              energy-system operations, facility management and finance, and
-              data engineering practice. Those experiences shaped a focus on
-              reliable data infrastructure and operational intelligence for
-              real-world sectors.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <section className="section">
-        <div className="container card contact">
-          <h2>Contact</h2>
-
-          <p>
-            TrailDa is currently in early development and open to conversations
-            with businesses and ecosystem partners interested in operational
-            intelligence.
-          </p>
-
-          <p className="email">trailda.dss@gmail.com</p>
-        </div>
-      </section>
-    </main>
-  );
+      </footer>
+    </div>
+  )
 }
