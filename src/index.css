@@ -56,7 +56,10 @@
 
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 84px;
+  /* Clears the sticky header (68px desktop, 60px at the mobile breakpoint)
+     plus a little breathing room so an anchored section is not flush
+     against the header edge. */
+  scroll-padding-top: 76px;
 }
 
 body {
@@ -297,36 +300,45 @@ p {
   color: var(--nav-active-fg);
 }
 .header-cta {
-  margin-left: 1rem;
   flex-shrink: 0;
+}
+
+/* Right-side actions group. margin-left: auto is what anchors the CTA and the
+   menu control to the far right together, so the hamburger can never drift
+   into the middle of the header. */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-left: auto;
 }
 
 /* ---------- Mobile menu control ---------- */
 /* Hidden on desktop; the pill navigation is the primary nav there. The button
-   keeps a visible focus ring and a 44px touch target. */
+   is frameless so it does not read as an oversized boxed control. The hit area
+   stays 40px tall for touch, while the icon itself is 21px. */
 .menu-toggle {
   display: none;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 44px;
+  width: 40px;
+  height: 40px;
   flex-shrink: 0;
-  margin-left: auto;
   padding: 0;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--line-on-dark);
-  border-radius: 12px;
+  background: none;
+  border: 0;
+  border-radius: 8px;
   color: var(--text-on-dark);
   cursor: pointer;
 }
 .menu-toggle:focus-visible {
   outline: 2px solid var(--accent);
-  outline-offset: 3px;
+  outline-offset: 2px;
 }
 .menu-bars {
   display: grid;
   gap: 4px;
-  width: 18px;
+  width: 21px;
 }
 .menu-bars span {
   display: block;
@@ -336,29 +348,34 @@ p {
 }
 
 /* ---------- Mobile menu ---------- */
+/* Right-aligned dropdown, sitting under the menu control that opened it
+   rather than a centred panel. The track hugs the right padding edge and each
+   link sizes to its own label, so the block aligns with the control. */
 .mobile-menu {
   display: none;
   border-top: 1px solid var(--line-on-dark);
   background: rgba(10, 16, 32, 0.98);
   backdrop-filter: saturate(140%) blur(10px);
-  padding: 0.5rem 0 0.9rem;
+  padding: 0.4rem 0 0.6rem;
 }
 .mobile-menu nav {
   display: grid;
-  gap: 0.15rem;
+  justify-items: end;
+  gap: 0.1rem;
+  /* Match the header's content edge so the dropdown lines up with the row
+     above it instead of bleeding into the screen edge. */
+  padding-right: 0;
 }
 .mobile-menu-link {
   display: block;
-  padding: 0.85rem 0.25rem;
+  width: auto;
+  min-width: 9rem;
+  padding: 0.7rem 0.75rem;
   color: var(--text-on-dark);
   text-decoration: none;
   font-weight: 500;
-  font-size: 1rem;
-  border-bottom: 1px solid var(--line-on-dark);
+  font-size: 0.98rem;
   border-radius: 8px;
-}
-.mobile-menu-link:last-child {
-  border-bottom: 0;
 }
 .mobile-menu-link:hover,
 .mobile-menu-link:focus-visible {
@@ -867,36 +884,48 @@ p {
   .example-grid {
     grid-template-columns: repeat(2, 1fr);
   }
-  /* Phone typography: heading settles in the 32-38px band, paragraph at
-     16-18px. The clamps scale smoothly from 320px up rather than stepping. */
+  /* Phone typography: the heading drops to 27-30px so the hero reads as a
+     compact block rather than a wall of text, with tighter vertical rhythm.
+     Clamps scale smoothly from 320px up instead of stepping. */
+  .hero {
+    padding-top: clamp(2rem, 6vw, 2.75rem);
+    padding-bottom: clamp(2.25rem, 6vw, 3rem);
+  }
   .hero-copy h1 {
-    font-size: clamp(2rem, 9.5vw, 2.4rem);
-    line-height: 1.15;
+    font-size: clamp(1.6875rem, 7.6vw, 1.875rem);
+    line-height: 1.12;
     letter-spacing: -0.02em;
+    margin: 0.3rem 0 0.85rem;
   }
   .lede {
-    font-size: clamp(1rem, 4.2vw, 1.125rem);
-    line-height: 1.6;
+    font-size: clamp(0.9375rem, 4vw, 1rem);
+    line-height: 1.5;
   }
   .eyebrow {
-    font-size: 0.75rem;
+    font-size: clamp(0.6875rem, 2.9vw, 0.75rem);
     letter-spacing: 0.14em;
+    margin: 0 0 0.6rem;
   }
   h2 {
-    font-size: clamp(1.4rem, 5.5vw, 1.75rem);
+    font-size: clamp(1.3rem, 5vw, 1.625rem);
     line-height: 1.2;
   }
   .section-intro {
-    font-size: 1rem;
-    margin-bottom: 2rem;
+    font-size: 0.98rem;
+    margin-bottom: 1.75rem;
   }
   .prose p {
-    font-size: 1rem;
-    line-height: 1.65;
+    font-size: 0.98rem;
+    line-height: 1.6;
+  }
+  .hero-actions {
+    margin-top: 1.4rem;
+    gap: 0.75rem;
   }
   .hero-note {
-    font-size: 0.88rem;
-    line-height: 1.55;
+    margin-top: 1.4rem;
+    font-size: 0.85rem;
+    line-height: 1.5;
   }
 }
 
@@ -923,9 +952,18 @@ p {
   .mobile-menu.is-open {
     display: block;
   }
+  /* The menu sits inside the same content gutter as the header row, so its
+     links align with the control that opened it. */
+  .mobile-menu nav {
+    padding-right: 1rem;
+  }
+  /* Two children only: brand on the left, header-actions pushed right by its
+     own margin-left: auto. space-between is deliberately not used here, since
+     with three children it centres the middle one. */
   .header-inner {
-    justify-content: space-between;
-    gap: 0.75rem;
+    justify-content: flex-start;
+    gap: 0.6rem;
+    height: 60px;
   }
   /* Keep the wordmark on the left and let the logo shrink with it so the row
      cannot overflow at 320px. */
@@ -935,20 +973,19 @@ p {
     gap: 0.4rem;
   }
   .brand-logo {
-    height: 26px;
+    height: 24px;
   }
   .brand-name {
-    font-size: 0.95rem;
+    font-size: clamp(1rem, 4.4vw, 1.125rem);
+  }
+  .header-actions {
+    gap: 0.35rem;
   }
   .header-cta {
-    margin-left: 0;
-    padding: 0.55rem 0.8rem;
-    font-size: 0.82rem;
-  }
-  /* A usable touch target is not optional: the control never shrinks, and
-     nothing in the row wraps or overlaps. */
-  .menu-toggle {
-    flex-shrink: 0;
+    min-height: 40px;
+    padding: 0.5rem 0.8rem;
+    font-size: clamp(0.8125rem, 3.6vw, 0.875rem);
+    white-space: nowrap;
   }
   .pipeline {
     grid-template-columns: 1fr;

@@ -179,32 +179,38 @@ export default function App() {
             ))}
           </nav>
 
-          {/* Mobile: the same three destinations behind a hamburger. Hidden on
-              desktop, where the pill navigation above remains the primary nav. */}
-          <button
-            id="menu-toggle"
-            type="button"
-            className="menu-toggle"
-            aria-expanded={menuOpen}
-            aria-controls={menuId}
-            aria-label={menuOpen ? 'Close menu' : 'Open menu'}
-            onClick={() => setMenuOpen((open) => !open)}
-          >
-            <span className="menu-bars" aria-hidden="true">
-              <span />
-              <span />
-              <span />
-            </span>
-          </button>
+          {/* Right-side actions: the booking CTA and the mobile menu control
+              belong together, pinned to the far right as one group by
+              margin-left: auto. Three loose flex children would let the
+              hamburger drift to the centre of the header. */}
+          <div className="header-actions">
+            <a
+              className="btn btn-primary btn-sm header-cta"
+              href={BOOKING_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Book a session
+            </a>
 
-          <a
-            className="btn btn-primary btn-sm header-cta"
-            href={BOOKING_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Book a session
-          </a>
+            {/* Mobile: the same three destinations behind a hamburger. Hidden on
+                desktop, where the pill navigation above remains the primary nav. */}
+            <button
+              id="menu-toggle"
+              type="button"
+              className="menu-toggle"
+              aria-expanded={menuOpen}
+              aria-controls={menuId}
+              aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+              onClick={() => setMenuOpen((open) => !open)}
+            >
+              <span className="menu-bars" aria-hidden="true">
+                <span />
+                <span />
+                <span />
+              </span>
+            </button>
+          </div>
         </div>
 
         <div
