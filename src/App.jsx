@@ -135,7 +135,7 @@ export default function App() {
       <header className="site-header">
         <div className="container header-inner">
           <a className="brand" href="#top" aria-label="TrailDa home">
-            <img src="/trailda-logo.png" alt="" className="brand-logo" width="34" height="34" />
+            <img src="/trailda-logo.png" alt="" className="brand-logo" width="3601" height="1891" />
             <span className="brand-name">TrailDa</span>
           </a>
           <nav className="site-nav" aria-label="Primary">

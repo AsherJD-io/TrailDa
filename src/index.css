@@ -248,9 +248,12 @@ p {
   letter-spacing: -0.01em;
 }
 .brand-logo {
-  width: 30px;
-  height: 30px;
-  border-radius: 7px;
+  /* The mark is a wide transparent PNG (artwork aspect ~2.23, centred in the
+     canvas). Size by height so the visible symbol reads ~38px on desktop while
+     keeping its natural aspect ratio; width follows automatically. */
+  height: 54px;
+  width: auto;
+  display: block;
 }
 .brand-name {
   font-size: 1.1rem;
