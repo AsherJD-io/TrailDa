@@ -1,5 +1,5 @@
 /* ==========================================================================
-   TrailDa / H Factor — design system
+   TrailDa / H-Facto design system
    A dark editorial hero and closing, with lighter spacious sections between.
    One restrained electric-teal accent. Motion explains the product.
    ========================================================================== */
@@ -245,9 +245,6 @@ p {
 }
 .site-nav a:hover {
   color: var(--text-on-dark);
-}
-.header-cta {
-  margin-left: 0.5rem;
 }
 
 /* ---------- Hero ---------- */
@@ -615,25 +612,25 @@ p {
 }
 .footer-inner {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 1.5rem;
-  flex-wrap: wrap;
+  text-align: center;
+  gap: 0.4rem;
   font-size: 0.9rem;
 }
 .footer-brand {
   font-weight: 700;
   color: var(--text-on-dark);
+  font-size: 1.05rem;
 }
 .footer-note {
   opacity: 0.8;
 }
-.footer-mail {
-  margin-left: auto;
-  color: var(--accent);
-  text-decoration: none;
-}
-.footer-mail:hover {
-  text-decoration: underline;
+.footer-copy {
+  margin-top: 0.35rem;
+  font-size: 0.8rem;
+  color: var(--muted-on-dark);
+  opacity: 0.65;
 }
 
 /* ---------- Responsive ---------- */
@@ -681,14 +678,6 @@ p {
   }
   .hero-actions .btn {
     width: 100%;
-  }
-  .footer-inner {
-    flex-direction: column;
-    text-align: center;
-    gap: 0.6rem;
-  }
-  .footer-mail {
-    margin-left: 0;
   }
 }
 

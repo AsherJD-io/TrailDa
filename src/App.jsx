@@ -1,7 +1,6 @@
 import { useEffect, useRef } from 'react'
 
 const BOOKING_URL = 'https://calendar.app.google/1SVu6faw9GNBHzxb7'
-const CONTACT_EMAIL = 'trailda.dss@gmail.com'
 
 // The five-stage pipeline, carried forward from the original "How TrailDa works" row.
 const PIPELINE = [
@@ -12,7 +11,7 @@ const PIPELINE = [
   'Intelligence and next steps',
 ]
 
-// Illustrative example signals for H Factor. These are deliberately generic
+// Illustrative example signals for H-Facto. These are deliberately generic
 // examples of the kind of thing the capability is designed to surface. They are
 // not real monitored events, customer data or live integrations.
 const EXAMPLES = [
@@ -88,17 +87,9 @@ export default function App() {
           </a>
           <nav className="site-nav" aria-label="Primary">
             <a href="#how-it-works">How it works</a>
-            <a href="#h-factor">H Factor</a>
+            <a href="#h-facto">H-Facto</a>
             <a href="#story">Story</a>
           </nav>
-          <a
-            className="btn btn-primary btn-sm header-cta"
-            href={BOOKING_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Book a session
-          </a>
         </div>
       </header>
 
@@ -107,10 +98,10 @@ export default function App() {
         <section className="hero" id="top">
           <div className="container hero-grid">
             <div className="hero-copy">
-              <p className="eyebrow">H Factor by TrailDa</p>
+              <p className="eyebrow">H-Facto by TrailDa</p>
               <h1>See what is happening across your business, before it becomes a problem.</h1>
               <p className="lede">
-                H Factor is TrailDa&apos;s real-time operational monitoring and intelligence
+                H-Facto is TrailDa&apos;s real-time operational monitoring and intelligence
                 capability. It follows the data your business already produces, connects the
                 signals, and helps you understand what is changing, what deserves attention, and
                 what to do next.
@@ -124,7 +115,7 @@ export default function App() {
                 </a>
               </div>
               <p className="hero-note">
-                TrailDa is in early development. H Factor is being validated against real
+                TrailDa is in early development. H-Facto is being validated against real
                 operational data before wider release.
               </p>
             </div>
@@ -185,7 +176,7 @@ export default function App() {
                   </li>
                 </ol>
                 <p className="diagram-caption">
-                  An illustration of how H Factor connects operational signals. Not a live console
+                  An illustration of how H-Facto connects operational signals. Not a live console
                   and not customer data.
                 </p>
               </div>
@@ -206,7 +197,7 @@ export default function App() {
               </p>
               <p>
                 Without structured visibility, decisions are made late, costs drift, and recurring
-                operational mistakes go unexplained. H Factor exists to close that gap: to watch
+                operational mistakes go unexplained. H-Facto exists to close that gap: to watch
                 the whole picture, notice what matters, and say so in time to act.
               </p>
             </div>
@@ -219,7 +210,7 @@ export default function App() {
             <p className="section-eyebrow">How it works</p>
             <h2>From operational data to a clear next step.</h2>
             <p className="section-intro">
-              H Factor follows the same path TrailDa uses across the platform: take the data a
+              H-Facto follows the same path TrailDa uses across the platform: take the data a
               business already generates, make it reliable, and turn it into intelligence.
             </p>
             <ol className="pipeline">
@@ -237,10 +228,10 @@ export default function App() {
           </div>
         </section>
 
-        {/* H Factor deep dive */}
-        <section className="section" id="h-factor">
+        {/* H-Facto deep dive */}
+        <section className="section" id="h-facto">
           <div className="container">
-            <p className="section-eyebrow">H Factor</p>
+            <p className="section-eyebrow">H-Facto</p>
             <h2>Monitoring that turns into intelligence.</h2>
             <div className="feature-grid">
               <article className="feature">
@@ -278,7 +269,7 @@ export default function App() {
                 ))}
               </div>
               <p className="examples-note">
-                These are illustrative examples of the kind of value H Factor is designed to
+                These are illustrative examples of the kind of value H-Facto is designed to
                 provide, drawn from the intended behaviour rather than from live customer activity.
               </p>
             </div>
@@ -300,7 +291,7 @@ export default function App() {
               </p>
               <p>
                 Those experiences shaped a focus on reliable data infrastructure and operational
-                intelligence for real-world sectors. H Factor is the first capability built directly
+                intelligence for real-world sectors. H-Facto is the first capability built directly
                 on that idea, and the wider TrailDa platform is being developed around it.
               </p>
             </div>
@@ -310,7 +301,7 @@ export default function App() {
         {/* Closing CTA */}
         <section className="closing" id="contact">
           <div className="container narrow closing-inner">
-            <h2>See what H Factor could surface in your business.</h2>
+            <h2>See what H-Facto could surface in your business.</h2>
             <p>
               Book a short session to walk through your operations and where clearer visibility
               would help. TrailDa is in early development and open to conversations with businesses
@@ -319,9 +310,6 @@ export default function App() {
             <div className="hero-actions center">
               <a className="btn btn-primary" href={BOOKING_URL} target="_blank" rel="noopener noreferrer">
                 Book a session
-              </a>
-              <a className="btn btn-ghost" href={`mailto:${CONTACT_EMAIL}`}>
-                {CONTACT_EMAIL}
               </a>
             </div>
           </div>
@@ -332,9 +320,7 @@ export default function App() {
         <div className="container footer-inner">
           <span className="footer-brand">TrailDa</span>
           <span className="footer-note">Operational intelligence for businesses</span>
-          <a className="footer-mail" href={`mailto:${CONTACT_EMAIL}`}>
-            {CONTACT_EMAIL}
-          </a>
+          <span className="footer-copy">© 2026 TrailDa</span>
         </div>
       </footer>
     </div>

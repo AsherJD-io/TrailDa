@@ -1,45 +1,36 @@
-# TrailDa
+# TrailDa Landing Page
 
-TrailDa is building an AI-powered operational intelligence platform for agricultural production networks.
+This repository holds the public landing page for TrailDa. The page features
+H-Facto, TrailDa's real-time operational monitoring and intelligence capability.
 
-The platform helps agribusiness operators turn operational farm data into actionable insights for production planning, performance monitoring, and yield forecasting across multiple farms.
+TrailDa is the company and the broader operational-intelligence platform.
+H-Facto is the product the public page presents: it follows the operational data
+a business already produces, connects the signals, and helps the business
+understand what is changing, what deserves attention, and what to do next.
 
-## The Problem
+- Production site: https://trailda-dss.vercel.app/
+- Book a session: https://calendar.app.google/1SVu6faw9GNBHzxb7
 
-Agricultural production networks often operate with limited visibility into their own operational data. Decisions around planting cycles, feed usage, production planning, and cost management are frequently made without structured data insights.
+## Tech
 
-This lack of decision infrastructure leads to inefficiencies, unpredictable yields, and costly operational mistakes across agribusiness networks and production clusters.
+A single-page site built with Vite and React. Styling is plain CSS, and the
+operational-signal visual is original CSS and SVG animation that respects
+`prefers-reduced-motion`.
 
-## The Solution
+## Local development
 
-TrailDa aggregates operational farm data and converts it into actionable insights using structured data pipelines, analytics layers, and AI-assisted insight generation.
+Install dependencies from the committed lockfile, then run the dev server:
 
-The platform enables agricultural networks to:
+```bash
+npm ci
+npm run dev
+```
 
-- Monitor performance across multiple farms
-- Identify operational anomalies
-- Improve production planning
-- Forecast yields and operational outcomes
+Lint and produce a production build:
 
-## Market Entry
+```bash
+npm run lint
+npm run build
+```
 
-TrailDa is initially targeting structured agricultural production networks rather than fragmented individual farms.
-
-### Pilot Path
-
-- Abrot agricultural business network (Ogun State, Nigeria)
-
-### Expansion
-
-- Poultry production networks in Oyo State
-- Agricultural cooperatives and production clusters across southwestern Nigeria
-
-## Founder
-
-TrailDa emerged from the founder’s exposure to farming while growing up and later experience working within poultry production networks in Ibadan. These experiences revealed how critical operational decisions in agriculture are often made without structured data insights.
-
-TrailDa is being built to provide decision infrastructure for agricultural production networks.
-
-## Contact
-
-[trailda.dss@gmail.com](mailto:trailda.dss@gmail.com)
+The build output is written to `dist/` and is what gets deployed to production.
