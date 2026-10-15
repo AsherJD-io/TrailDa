@@ -90,6 +90,14 @@ export default function App() {
             <a href="#h-facto">H-Facto</a>
             <a href="#story">Story</a>
           </nav>
+          <a
+            className="btn btn-primary btn-sm header-cta"
+            href={BOOKING_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Book a session
+          </a>
         </div>
       </header>
 
@@ -98,7 +106,7 @@ export default function App() {
         <section className="hero" id="top">
           <div className="container hero-grid">
             <div className="hero-copy">
-              <p className="eyebrow">H-Facto by TrailDa</p>
+              <p className="eyebrow">TrailDa</p>
               <h1>See what is happening across your business, before it becomes a problem.</h1>
               <p className="lede">
                 H-Facto is TrailDa&apos;s real-time operational monitoring and intelligence
@@ -318,8 +326,10 @@ export default function App() {
 
       <footer className="site-footer">
         <div className="container footer-inner">
-          <span className="footer-brand">TrailDa</span>
-          <span className="footer-note">Operational intelligence for businesses</span>
+          <div className="footer-lockup">
+            <span className="footer-brand">TrailDa</span>
+            <span className="footer-note">Operational intelligence for businesses</span>
+          </div>
           <span className="footer-copy">© 2026 TrailDa</span>
         </div>
       </footer>
