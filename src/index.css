@@ -25,6 +25,17 @@
   --accent-ink: #04322f;
   --accent-on-dark-soft: rgba(47, 212, 196, 0.14);
 
+  /* Secondary action: near-black fill, light label, subtle grey edge */
+  --btn-secondary-bg: #10151f;
+  --btn-secondary-fg: #eaf0fa;
+  --btn-secondary-border: #3a4457;
+  --btn-secondary-hover-bg: #1a2130;
+
+  /* Active nav tab: a stronger neutral slate, distinct from the teal CTA */
+  --nav-active-bg: #4a5468;
+  --nav-active-fg: #ffffff;
+  --nav-active-edge: #66718a;
+
   /* Lines */
   --line-on-dark: rgba(159, 176, 201, 0.16);
   --line: #e2e7ee;
@@ -199,6 +210,18 @@ p {
   border-color: var(--accent);
   color: var(--accent);
 }
+/* Secondary action on the dark hero: near-black fill, light label, subtle
+   grey edge. Deliberately distinct from the teal primary booking button. */
+.btn-secondary {
+  background: var(--btn-secondary-bg);
+  color: var(--btn-secondary-fg);
+  border-color: var(--btn-secondary-border);
+}
+.btn-secondary:hover {
+  background: var(--btn-secondary-hover-bg);
+  border-color: #4a5468;
+  transform: translateY(-1px);
+}
 
 /* ---------- Header ---------- */
 .site-header {
@@ -256,11 +279,18 @@ p {
   color: var(--text-on-dark);
   background: rgba(255, 255, 255, 0.06);
 }
-/* Selected tab: the active in-page section. JS toggles .is-current as the
-   visitor scrolls; the fill slides in smoothly rather than snapping. */
+/* Selected tab: the active in-page section. A stronger neutral slate fill
+   with a defined edge, kept visually separate from the teal booking button.
+   JS toggles .is-current as the visitor scrolls; the fill slides in smoothly. */
 .site-nav a.is-current {
-  color: var(--ink);
-  background: var(--accent);
+  color: var(--nav-active-fg);
+  background: var(--nav-active-bg);
+  box-shadow: inset 0 0 0 1px var(--nav-active-edge);
+}
+.site-nav a.is-current:hover,
+.site-nav a.is-current:focus-visible {
+  background: var(--nav-active-edge);
+  color: var(--nav-active-fg);
 }
 .header-cta {
   margin-left: 1rem;

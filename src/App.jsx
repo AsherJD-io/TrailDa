@@ -168,7 +168,7 @@ export default function App() {
                 what to do next.
               </p>
               <div className="hero-actions">
-                <a className="btn btn-primary" href="#how-it-works">
+                <a className="btn btn-secondary" href="#how-it-works">
                   See how it works
                 </a>
               </div>
