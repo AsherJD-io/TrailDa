@@ -19,6 +19,11 @@ const PIPELINE = [
   'Intelligence and next steps',
 ]
 
+// Time the mobile signal rests on each stage before moving to the next. Long
+// enough to read the highlight arrive and ease in, short enough that the whole
+// progression stays legible rather than feeling like a slideshow.
+const STAGE_MS = 1800
+
 // Illustrative example signals for H-Facto. These are deliberately generic
 // examples of the kind of thing the capability is designed to surface. They are
 // not real monitored events, customer data or live integrations.
@@ -49,10 +54,20 @@ export default function App() {
   const diagramRef = useRef(null)
   const [menuOpen, setMenuOpen] = useState(false)
   const menuId = 'mobile-menu'
+  // Mobile pipeline progression. signalVisible flips once the signal starts
+  // moving; signalY is the measured offset from the top of the pipeline to the
+  // active stage's centre, so the point and the highlighted stage are always the
+  // same number and can never drift. Which stage is active lives on the DOM as
+  // is-active / is-done, toggled imperatively so it cannot fight the reveal
+  // effect's own is-revealed class.
+  const [signalVisible, setSignalVisible] = useState(false)
+  const [signalY, setSignalY] = useState(0)
   const toggleRef = useRef(null)
   const panelRef = useRef(null)
   const closeRef = useRef(null)
   const wasOpenRef = useRef(false)
+  const pipelineRef = useRef(null)
+  const stepRefs = useRef([])
 
   // A full-screen overlay has to behave like a dialog, not a dropdown. Escape
   // closes it and returns focus to the control that opened it, the page cannot
@@ -160,6 +175,132 @@ export default function App() {
     requestAnimationFrame(step)
     return () => {
       running = false
+    }
+  }, [])
+
+  // Mobile pipeline progression. The five stages stack vertically below 620px,
+  // so the travelling signal moves down a rail beside them and each stage lights
+  // as the signal reaches it.
+  //
+  // The signal is positioned from measured geometry rather than fixed offsets:
+  // stage cards have variable heights once labels wrap at 320px, so the offset
+  // for each stage is read from the live DOM and recomputed on resize. The stage
+  // index and the signal offset come from the same measurement, so the point and
+  // the highlighted stage cannot drift apart.
+  //
+  // Runs only on the stacked layout, and not at all under reduced motion.
+  useEffect(() => {
+    const pipeline = pipelineRef.current
+    if (!pipeline) return
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)')
+    // The rail only exists where the stages stack.
+    const stacked = window.matchMedia('(max-width: 620px)')
+    if (reduce.matches || typeof IntersectionObserver === 'undefined') return
+
+    const steps = () => Array.from(pipeline.querySelectorAll('.pipeline-step'))
+
+    // Offset from the pipeline's top to each stage's centre, measured live.
+    const centres = () => {
+      const base = pipeline.getBoundingClientRect().top
+      return steps().map((el) => {
+        const r = el.getBoundingClientRect()
+        return r.top - base + r.height / 2
+      })
+    }
+
+    let timer = null
+    let positions = centres()
+    let index = 0
+
+    // Move to a stage: update the offset and the active state together. The
+    // offset is read from the live DOM at the moment of the move, so the point
+    // and the highlighted stage always describe the same element.
+    //
+    // The classes are toggled imperatively rather than rendered from state.
+    // React rewrites className on every render, and the reveal effect adds
+    // is-revealed through classList; a React-managed class string would silently
+    // drop it, leaving the stage invisible.
+    const paint = (i) => {
+      stepRefs.current.forEach((el, n) => {
+        if (!el) return
+        el.classList.toggle('is-active', n === i)
+        el.classList.toggle('is-done', i !== null && n < i)
+      })
+    }
+    const goTo = (i) => {
+      positions = centres()
+      index = i
+      paint(i)
+      setSignalVisible(true)
+      if (!positions.length) return
+      setSignalY(positions[i] ?? 0)
+    }
+
+    // Start only once the stage cards have finished their reveal transition.
+    // Measuring while they are still translating would capture a moving centre,
+    // and a re-render triggered mid-transition competes with the reveal
+    // animation for the same frame.
+    let started = false
+    const start = () => {
+      if (started || !stacked.matches) return
+      started = true
+      goTo(0)
+      const tick = () => {
+        const next = (index + 1) % PIPELINE.length
+        goTo(next)
+        timer = window.setTimeout(tick, STAGE_MS)
+      }
+      timer = window.setTimeout(tick, STAGE_MS)
+    }
+
+    const stop = () => {
+      if (timer) {
+        window.clearTimeout(timer)
+        timer = null
+      }
+    }
+
+    // Begin when the pipeline scrolls into view so the signal does not run
+    // unseen above the fold. The cards reveal on a 0.5s transition, so wait for
+    // that to land before starting the sequence.
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) window.setTimeout(start, 600)
+          else stop()
+        })
+      },
+      { threshold: 0.2 }
+    )
+    io.observe(pipeline)
+
+    // Re-measure on resize: label wrapping at narrow widths changes card
+    // heights, so the rail anchors must follow the new layout.
+    const onResize = () => {
+      positions = centres()
+      if (timer && index < positions.length) setSignalY(positions[index] ?? 0)
+      if (!stacked.matches) {
+        stop()
+        paint(-1)
+      }
+    }
+    window.addEventListener('resize', onResize)
+
+    // Card heights also settle after the reveal transition and after web fonts
+    // load, neither of which fires a resize event. Re-measure on a short settle
+    // rather than observing every step: a ResizeObserver on the cards would fire
+    // on the reveal transition it is trying to measure, and that feedback loop
+    // starves the reveal animation so stages never become visible.
+    const settle = window.setTimeout(() => {
+      positions = centres()
+      if (timer && index < positions.length) setSignalY(positions[index] ?? 0)
+    }, 900)
+
+    return () => {
+      stop()
+      window.clearTimeout(settle)
+      io.disconnect()
+      window.removeEventListener('resize', onResize)
     }
   }, [])
 
@@ -502,18 +643,32 @@ export default function App() {
               H-Facto follows the same path TrailDa uses across the platform: take the data a
               business already generates, make it reliable, and turn it into intelligence.
             </p>
-            <ol className="pipeline">
+            <ol className="pipeline" ref={pipelineRef}>
               {PIPELINE.map((stage, i) => (
                 <li
                   className="pipeline-step"
                   key={stage}
                   data-reveal
+                  data-stage={i}
+                  ref={(el) => {
+                    if (stepRefs.current) stepRefs.current[i] = el
+                  }}
                   style={{ transitionDelay: `${i * 90}ms` }}
                 >
                   <span className="pipeline-index">{String(i + 1).padStart(2, '0')}</span>
                   <span className="pipeline-label">{stage}</span>
                 </li>
               ))}
+              {/* Mobile only: the signal point that travels the progress rail from
+                  stage 01 to stage 05. Positioned by measured geometry in JS, so
+                  it lands on each stage's real centre whatever the card heights
+                  are at 320/360/390px. Hidden on desktop, which keeps the
+                  horizontal travelling signal. */}
+              <span
+                className={`pipeline-signal${signalVisible ? ' is-visible' : ''}`}
+                aria-hidden="true"
+                style={{ transform: `translateY(${signalY}px)` }}
+              />
             </ol>
             <p className="section-foot">
               The platform works with existing operational data rather than requiring complex new
