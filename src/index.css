@@ -938,14 +938,17 @@ p {
     transform: translateX(calc(100% + 1000px));
   }
 }
-/* Mobile only: the signal point that travels the progress rail. Hidden on
-   desktop, which keeps the horizontal travelling signal. Inline styles cannot
-   override a rule that comes later in the cascade, so this lives in the mobile
-   block rather than next to the base rules. */
-.pipeline-signal {
-  display: block;
+/* Vertical counterpart for the stacked mobile layout: the same single signal
+   travels from the top of the stage 01 row to the bottom of the stage 05 row,
+   then starts again. */
+@keyframes pipelineSignalDown {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(100%);
+  }
 }
-
 .pipeline-step {
   position: relative;
   background: var(--white);
@@ -1261,75 +1264,33 @@ p {
   .pipeline {
     grid-template-columns: 1fr;
   }
-  /* The stages stack vertically here, so the travelling signal has to change
-     direction with them. Instead of a continuous band, a single signal point
-     travels down a progress rail and each stage responds as the point reaches
-     it, so the motion reads as data progressing through the five stages rather
-     than as a decorative sweep.
+  /* The five stages stack vertically here, so the same travelling signal
+     that sweeps left-to-right on desktop has to turn down the page instead.
+     This keeps a single animation on the same pseudo-element: the band is
+     repositioned to the left gutter and re-keyframed to travel vertically.
 
-     The point's offset is measured in JS from each card's real centre, which is
-     why the anchors hold even when labels wrap at 320px. The rail is drawn with
-     a static 2px line at left: 0, kept outside the text because every step
-     reserves room for its index column. */
-  .pipeline::before {
-    content: '';
-    position: absolute;
-    top: 0.9rem;
-    bottom: 0.9rem;
+     The desktop horizontal sweep is disabled outright so the two can never
+     combine. The band sits in the gutter at 2px wide, outside the text, because
+     every step reserves room for its index column. */
+  .pipeline::after {
+    top: 0;
+    bottom: 0;
     left: 0;
     width: 2px;
-    background: var(--line);
-    border-radius: 2px;
-    pointer-events: none;
+    height: 100%;
+    background: linear-gradient(
+      180deg,
+      transparent 0%,
+      rgba(20, 184, 172, 0.45) 18%,
+      rgba(20, 184, 172, 0.75) 50%,
+      rgba(20, 184, 172, 0.45) 82%,
+      transparent 100%
+    );
+    transform: translateY(-100%);
+    animation: pipelineSignalDown 5s linear infinite;
   }
-  /* The point is absolutely positioned, so it must also be taken out of the
-     grid: .pipeline is a CSS grid, and an in-flow span would become a sixth grid
-     item and push the stage rows apart. */
-  .pipeline-signal {
-    position: absolute;
-    top: 0;
-    left: -3px;
-    width: 8px;
-    height: 8px;
-    margin-top: -4px;
-    grid-area: 1 / 1;
-    border-radius: 50%;
-    background: var(--accent-strong);
-    /* Restrained: a tight core glow, not a bloom across the card. */
-    box-shadow: 0 0 0 3px rgba(20, 184, 172, 0.16);
-    /* Ease the point between measured anchors. */
-    transition: transform 1.1s cubic-bezier(0.45, 0, 0.25, 1);
-    will-change: transform;
-    pointer-events: none;
-    opacity: 0;
-    z-index: 2;
-  }
-  .pipeline-signal.is-visible {
-    opacity: 1;
-  }
-  /* The stage the signal is resting on. A teal accent on the index plus a left
-     border treatment, so the card itself never moves or reflows. */
-  .pipeline-step.is-active {
-    box-shadow: inset 2px 0 0 0 var(--accent-strong);
-  }
-  .pipeline-step.is-active .pipeline-index {
-    color: var(--accent-strong);
-    background: #f0fdfa;
-    box-shadow: inset 0 0 0 1px rgba(20, 184, 172, 0.35);
-  }
-  /* Stages already passed: quieter, but still fully legible. */
-  .pipeline-step.is-done .pipeline-index {
-    color: var(--accent-strong);
-    opacity: 0.55;
-  }
-  .pipeline-index {
-    transition:
-      color 0.45s ease,
-      background-color 0.45s ease,
-      box-shadow 0.45s ease,
-      opacity 0.45s ease;
-  }
-  /* Extra room on the left so the rail clears the index number. */
+  /* The stages each get extra left padding so the gutter band never crosses
+     the index numbers. */
   .pipeline-step {
     padding-left: 1.6rem;
   }
@@ -1422,19 +1383,10 @@ p {
   .pipeline-step {
     transition: none;
   }
-  /* No reveal animation: show lower-section content in its resting state. */
+  /* No travelling signal: suppress the sweep on both the horizontal desktop
+     layout and the vertical mobile one. Every stage and label stays visible. */
   .pipeline::after {
     display: none;
-  }
-  /* No travelling signal on mobile either. The rail and point stay out of the
-     way, and every stage keeps its label and index at full opacity so the
-     sequence is still readable as a static list. */
-  .pipeline::before,
-  .pipeline-signal {
-    display: none;
-  }
-  .pipeline-signal {
-    transition: none;
   }
   .pipeline-step,
   .example {
@@ -1473,20 +1425,5 @@ p {
   }
   .surf {
     opacity: 0.85;
-  }
-}
-
-/* ---------- Desktop pipeline: the stacked rail does not apply ---------- */
-/* The vertical progress rail only makes sense where the five stages stack.
-   Above 620px the stages sit in a row, so the rail and its travelling point are
-   removed and the original horizontal travelling signal is the only motion.
-
-   This has to come after the mobile block: React writes the point's offset as
-   an inline transform, and only a later rule in the cascade can take it back
-   out of the layout. */
-@media (min-width: 621px) {
-  .pipeline::before,
-  .pipeline-signal {
-    display: none;
   }
 }
