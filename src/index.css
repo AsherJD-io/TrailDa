@@ -940,13 +940,14 @@ p {
 }
 /* Vertical counterpart for the stacked mobile layout: the same single signal
    travels from the top of the stage 01 row to the bottom of the stage 05 row,
-   then starts again. */
+   then starts again. Uses top animation so the strip moves the full height
+   of the pipeline regardless of card wrapping. */
 @keyframes pipelineSignalDown {
   0% {
-    transform: translateY(-100%);
+    top: 0;
   }
   100% {
-    transform: translateY(100%);
+    top: 100%;
   }
 }
 .pipeline-step {
@@ -1266,33 +1267,26 @@ p {
   }
   /* The five stages stack vertically here, so the same travelling signal
      that sweeps left-to-right on desktop has to turn down the page instead.
-     This keeps a single animation on the same pseudo-element: the band is
-     repositioned to the left gutter and re-keyframed to travel vertically.
-
-     The desktop horizontal sweep is disabled outright so the two can never
-     combine. The band sits in the gutter at 2px wide, outside the text, because
-     every step reserves room for its index column. */
+     This keeps a single animation on the same pseudo-element: a thin
+     horizontal teal strip that starts at the top of the first card and
+     travels down to the bottom of the last card. */
   .pipeline::after {
     top: 0;
-    bottom: 0;
+    bottom: auto;
     left: 0;
-    width: 2px;
-    height: 100%;
+    right: 0;
+    width: 100%;
+    height: 2px;
     background: linear-gradient(
-      180deg,
+      90deg,
       transparent 0%,
-      rgba(20, 184, 172, 0.45) 18%,
-      rgba(20, 184, 172, 0.75) 50%,
-      rgba(20, 184, 172, 0.45) 82%,
+      rgba(20, 184, 172, 0.5) 15%,
+      rgba(20, 184, 172, 0.85) 50%,
+      rgba(20, 184, 172, 0.5) 85%,
       transparent 100%
     );
-    transform: translateY(-100%);
+    transform: none;
     animation: pipelineSignalDown 5s linear infinite;
-  }
-  /* The stages each get extra left padding so the gutter band never crosses
-     the index numbers. */
-  .pipeline-step {
-    padding-left: 1.6rem;
   }
   .example-grid {
     grid-template-columns: 1fr;
